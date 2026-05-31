@@ -1,18 +1,18 @@
-from openai import OpenAI
+import google.generativeai as genai
+import os
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 def invoke_ai(system_message: str, user_message: str) -> str:
-    """
-    Generic function to invoke an AI model given a system and user message.
-    Replace this if you want to use a different AI model.
-    """
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
-    client = OpenAI()  # Insert the API key here, or use env variable $OPENAI_API_KEY.
-    response = client.chat.completions.create(
-        model="o4-mini",
-        messages=[
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": user_message},
-        ],
-    )
-    return response.choices[0].message.content
+    prompt = f"""
+{system_message}
+
+{user_message}
+"""
+
+    response = model.generate_content(prompt)
+
+    return response.text
